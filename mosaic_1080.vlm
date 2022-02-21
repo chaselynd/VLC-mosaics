@@ -1,0 +1,45 @@
+# 1080p VLC mosaic for security cameras
+# Tested on VLC 3.0.16
+
+# Runs on Windows by command -> vlc --vlm-conf path_to_file.vlm
+
+# Alternatively, launch using the -Idummy flag so that only one VLC window opens. In this case, the VLC window must be closed using Ctrl+Q (for some reason the [x] button doesn't work).
+# Command -> vlc -Idummy --vlm-conf path_to_file.vlm
+
+# Volume can be controlled using the mouse scroll wheel.
+
+# Reset VLM configuration
+del all
+
+# Background
+new   bg broadcast enabled
+setup bg input "path_to_file\background_1080.jpg"
+setup bg option image-duration=-1
+setup bg output #transcode{vcodec=mp4v,vb=0,fps=0,acodec=none,channels=2,sfilter=mosaic{alpha=255,width=1920,height=1080,cols=2,rows=2,position=1,order="1,2,3,4",keep-aspect-ratio=enabled,mosaic-align=0,keep-picture=1}}:bridge-in{offset=100}:display
+
+# Camera 1 (audio enabled)
+new   ch1 broadcast enabled
+setup ch1 input "rtsp://admin:password@IPaddress:554/channel"
+setup ch1 output #duplicate{dst=mosaic-bridge{id=ch1,width=960,height=540},select=video,dst=bridge-out{id=0},select=audio}
+
+# Camera 2
+new   ch2 broadcast enabled
+setup ch2 input "rtsp://admin:password@IPaddress:554/channel"
+setup ch2 output #duplicate{dst=mosaic-bridge{id=ch2,width=960,height=540},select=video}
+
+# Camera 3
+new   ch3 broadcast enabled
+setup ch3 input "rtsp://admin:password@IPaddress:554/channel"
+setup ch3 output #duplicate{dst=mosaic-bridge{id=ch3,width=960,height=540},select=video}
+
+# Camera 4
+new   ch4 broadcast enabled
+setup ch4 input "rtsp://admin:password@IPaddress:554/channel"
+setup ch4 output #duplicate{dst=mosaic-bridge{id=ch4,width=960,height=540},select=video}
+
+# Launch everything
+control bg play
+control ch1 play
+control ch2 play
+control ch3 play
+control ch4 play
